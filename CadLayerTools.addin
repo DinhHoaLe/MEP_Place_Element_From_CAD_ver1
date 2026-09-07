@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Name>Create Duct From CAD</Name>
+    <Assembly>bin\Release\net48\CadLayerTools.dll</Assembly>
+    <AddInId>0D3A7AE7-9E37-4D48-9815-CA7491B8DE25</AddInId>
+    <FullClassName>CadLayerTools.ExportCadLayers</FullClassName>
+    <Text>Create Duct From CAD</Text>
+    <VendorId>HOAL</VendorId>
+    <VendorDescription>CAD layer geometry exporter</VendorDescription>
+  </AddIn>
+</RevitAddIns>

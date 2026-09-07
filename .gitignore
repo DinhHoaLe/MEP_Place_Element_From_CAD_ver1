@@ -1,0 +1,13 @@
+.vs/
+bin/
+obj/
+work/
+
+*.user
+*.suo
+*.pdb
+
+Debug/
+Release/
+
+Revit/
