@@ -15,7 +15,12 @@ namespace CadLayerTools
 public class UiChoice
     {
         public object Id {get;set;}
+        public double ElevationMm {get;set;}
         public string Name {get;set;}
+        public string CategoryName {get;set;}
+        public string FamilyName {get;set;}
+        public object FamilyId {get;set;}
+        public EquipmentHostKind HostKind {get;set;}
         public override string ToString()=>Name;
     }
 }

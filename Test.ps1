@@ -1,10 +1,10 @@
-param([string]$RevitInstallDir = 'C:\Program Files\Autodesk\Revit 2024')
+param([ValidateSet('2023','2024')][string]$RevitVersion='2023',[string]$RevitInstallDir)
 $ErrorActionPreference = 'Stop'
 # Build.ps1 also defines compiler/reference paths in this scope.
-. (Join-Path $PSScriptRoot 'Build.ps1') -RevitInstallDir $RevitInstallDir
+. (Join-Path $PSScriptRoot 'Build.ps1') -RevitVersion $RevitVersion -RevitInstallDir $RevitInstallDir
 $sourceFiles = @(Get-ChildItem (Join-Path $PSScriptRoot 'src') -Filter *.cs -Recurse | ForEach-Object FullName)
 $referenceArgs = @()
-foreach ($name in @('mscorlib.dll','System.dll','System.Core.dll','WindowsBase.dll','PresentationCore.dll','PresentationFramework.dll','System.Xaml.dll'))
+foreach ($name in @('mscorlib.dll','System.dll','System.Core.dll','System.Drawing.dll','WindowsBase.dll','PresentationCore.dll','PresentationFramework.dll','System.Xaml.dll'))
 { $referenceArgs += '/reference:' + (Join-Path $refs $name) }
 foreach ($name in @('RevitAPI.dll','RevitAPIUI.dll'))
 { $referenceArgs += '/reference:' + (Join-Path $RevitInstallDir $name) }

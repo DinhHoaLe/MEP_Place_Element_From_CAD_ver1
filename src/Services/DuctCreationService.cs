@@ -14,7 +14,7 @@ namespace CadLayerTools
 /// <summary>Tạo toàn bộ duct trong một transaction. Kiểm tra trùng, gán Diameter, xác minh kết quả và hoàn tác nếu lỗi.</summary>
 internal static class DuctCreationService
 {
-public static DuctCreationResult Create(Document doc,List<Boundary> lines,List<LengthPair> pairs,ElementId systemId,ElementId typeId,ElementId levelId,double z)
+public static ElementCreationResult Create(Document doc,List<Boundary> lines,List<LengthPair> pairs,ElementId systemId,ElementId typeId,ElementId levelId,double z)
 {
                             var ids=new List<ElementId>();int duplicates=0;
                             var verified=new List<Tuple<Duct,Route>>();
@@ -47,7 +47,7 @@ var duct=Duct.Create(doc,(ElementId)systemId,(ElementId)typeId,(ElementId)levelI
                                 }
                                 catch {if(tx.GetStatus()==TransactionStatus.Started)tx.RollBack();throw;}
                             }
-return new DuctCreationResult { CreatedIds=ids, DuplicateCount=duplicates };
+return new ElementCreationResult { CreatedIds=ids, DuplicateCount=duplicates };
 }
 }
 }

@@ -19,11 +19,11 @@ public class ResultsWindow:ToolWindow
         {
 
             var summary=new TextBlock {Text=$"{rows.Count} CẶP HỢP LỆ     •     {unpaired} CHƯA GHÉP     •     {shortCount} ĐOẠN NGẮN     •     {ambiguous} MƠ HỒ",
-                Foreground=new SolidColorBrush(Color.FromRgb(15,118,110)),FontWeight=FontWeights.SemiBold,Margin=new Thickness(0,0,0,18),TextWrapping=TextWrapping.Wrap};
+                Foreground=new SolidColorBrush(Color.FromRgb(184,86,105)),FontWeight=FontWeights.SemiBold,Margin=new Thickness(0,0,0,18),TextWrapping=TextWrapping.Wrap};
             Body.Children.Add(summary);
             var grid=new DataGrid {ItemsSource=rows,AutoGenerateColumns=false,IsReadOnly=true,CanUserAddRows=false,HeadersVisibility=DataGridHeadersVisibility.Column,
-                RowHeight=40,Height=360,BorderThickness=new Thickness(0),GridLinesVisibility=DataGridGridLinesVisibility.Horizontal,
-                HorizontalGridLinesBrush=new SolidColorBrush(Color.FromRgb(236,240,246)),AlternatingRowBackground=new SolidColorBrush(Color.FromRgb(248,250,253)),
+                Background=Brushes.White,RowHeight=40,Height=300,BorderThickness=new Thickness(0),GridLinesVisibility=DataGridGridLinesVisibility.Horizontal,
+                HorizontalGridLinesBrush=new SolidColorBrush(Color.FromRgb(232,226,218)),AlternatingRowBackground=new SolidColorBrush(Color.FromRgb(255,247,248)),
                 EnableRowVirtualization=true,EnableColumnVirtualization=true};
             string[] names={"A","B","Length","Diameter","Delta","Start","End"};
             string[] headers={"Line A","Line B","Dài tim (mm)","Diameter (mm)","Chênh (mm)","Điểm đầu X,Y","Điểm cuối X,Y"};
@@ -33,6 +33,7 @@ public class ResultsWindow:ToolWindow
             Body.Children.Add(grid);
             Body.Children.Add(new Expander {Header="Chi tiết nhận diện",Margin=new Thickness(0,18,0,0),
                 Content=new TextBlock {Text=diagnostic,TextWrapping=TextWrapping.Wrap,Foreground=Muted,Margin=new Thickness(0,10,0,0)}});
+            BackButton();
             Action("Đóng",false,()=>Close()).IsCancel=true;
             Action("Cấu hình ống gió  →",true,()=>DialogResult=true).IsEnabled=rows.Count>0;
         }

@@ -11,8 +11,8 @@ using System.Windows.Interop;
 
 namespace CadLayerTools
 {
-/// <summary>Kết quả tạo: ID duct mới và số tuyến bị bỏ qua do đã tồn tại.</summary>
-internal class DuctCreationResult
+/// <summary>Kết quả tạo: ID phần tử mới và số phần tử bị bỏ qua do đã tồn tại.</summary>
+internal class ElementCreationResult
 {
     public List<ElementId> CreatedIds { get; set; }
     public int DuplicateCount { get; set; }

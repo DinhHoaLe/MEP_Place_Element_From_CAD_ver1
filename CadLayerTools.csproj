@@ -4,7 +4,9 @@
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>latest</LangVersion>
     <AssemblyName>CadLayerTools</AssemblyName>
-    <RevitInstallDir Condition="'$(RevitInstallDir)' == ''">C:\Program Files\Autodesk\Revit 2024</RevitInstallDir>
+    <RevitVersion Condition="'$(RevitVersion)' == ''">2023</RevitVersion>
+    <OutputPath>bin\$(Configuration)\Revit$(RevitVersion)\</OutputPath>
+    <RevitInstallDir Condition="'$(RevitInstallDir)' == ''">C:\Program Files\Autodesk\Revit $(RevitVersion)</RevitInstallDir>
     <AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages>
   </PropertyGroup>
   <ItemGroup><Reference Include="System.Windows.Forms" /><Reference Include="System.Drawing" />
@@ -12,4 +14,4 @@
     <Reference Include="RevitAPIUI"><HintPath>$(RevitInstallDir)\RevitAPIUI.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="Newtonsoft.Json"><HintPath>$(RevitInstallDir)\Newtonsoft.Json.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
-<ItemGroup><Compile Remove="work\**\*.cs" /></ItemGroup><ItemGroup><Reference Include="WindowsBase"/><Reference Include="PresentationCore"/><Reference Include="PresentationFramework"/><Reference Include="System.Xaml"/></ItemGroup><ItemGroup><Compile Include="src\**\*.cs" /></ItemGroup></Project>
+<ItemGroup><Compile Remove="work\**\*.cs" /></ItemGroup><ItemGroup><Reference Include="WindowsBase"/><Reference Include="PresentationCore"/><Reference Include="PresentationFramework"/><Reference Include="System.Xaml"/></ItemGroup><ItemGroup><Compile Include="src\**\*.cs" /></ItemGroup><ItemGroup><EmbeddedResource Include="assets\*.png"><LogicalName>CadLayerTools.Assets.%(Filename)%(Extension)</LogicalName></EmbeddedResource></ItemGroup></Project>
