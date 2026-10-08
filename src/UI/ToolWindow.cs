@@ -25,7 +25,7 @@ public class ToolWindow:Window
         public static Brush Muted=new SolidColorBrush(Color.FromRgb(113,107,99));
         public ToolWindow(string step,string title,string subtitle,double width=650,double height=660)
         {
-            Title="place_element_from_cad";Width=Math.Min(Math.Max(width,1100),SystemParameters.WorkArea.Width);Height=Math.Min(Math.Max(height,760),SystemParameters.WorkArea.Height);
+            Title="PLACE ELEMENT FROM CAD";Width=Math.Min(Math.Max(width,1100),SystemParameters.WorkArea.Width);Height=Math.Min(Math.Max(height,760),SystemParameters.WorkArea.Height);
             MinWidth=Math.Min(960,SystemParameters.WorkArea.Width);MinHeight=Math.Min(640,SystemParameters.WorkArea.Height);WindowStartupLocation=WindowStartupLocation.CenterOwner;
             ShowInTaskbar=false;FontFamily=new FontFamily("Segoe UI");FontSize=13;
             Background=new SolidColorBrush(Color.FromRgb(245,242,238));Foreground=Ink;
@@ -83,7 +83,7 @@ public class ToolWindow:Window
             header.ColumnDefinitions.Add(new ColumnDefinition());
             header.ColumnDefinitions.Add(new ColumnDefinition {Width=new GridLength(420)});
             var badge=new Border {Width=70,Height=70,CornerRadius=new CornerRadius(10),Background=new SolidColorBrush(Color.FromRgb(209,200,191)),BorderBrush=new SolidColorBrush(Color.FromRgb(200,188,172)),BorderThickness=new Thickness(1),HorizontalAlignment=HorizontalAlignment.Left};
-            badge.Child=new TextBlock {Text="▱\nCAD",FontSize=22,FontWeight=FontWeights.Bold,Foreground=new SolidColorBrush(Color.FromRgb(111,96,68)),TextAlignment=TextAlignment.Center,VerticalAlignment=VerticalAlignment.Center};
+            badge.Child=new Image {Source=ModeArtwork.Load("project-symbol"),Stretch=Stretch.Uniform,Margin=new Thickness(3)};
             header.Children.Add(badge);
             var heading=new StackPanel {VerticalAlignment=VerticalAlignment.Center};
             heading.Children.Add(new TextBlock {Text="BƯỚC "+step,FontSize=11,FontWeight=FontWeights.Bold,Foreground=new SolidColorBrush(Color.FromRgb(111,96,68)),Margin=new Thickness(0,0,0,4)});
