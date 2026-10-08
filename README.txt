@@ -41,16 +41,15 @@ FAMILY CẦN HOST
 Bước 3 chọn layer biên/đường nối và thông số nhận diện, rồi xem trước tuyến.
 Giữ thuật toán ghép biên theo đoạn nối, tạo duct tròn, chưa nối fitting.
 
-BUILD / TEST
+BUILD / INSTALL
 .\Build.ps1
-.\Test-SourceUi.ps1
 .\Install.ps1 (restart Revit)
 DLL Revit 2023: bin/Release/Revit2023/net48/CadLayerTools.dll
 Không dùng DLL build với API 2024 trên Revit 2023: gây lỗi Method not found khi đặt Family.
 Tool kiểm tra API major version trước khi chạy. Build/Install mặc định 2023.
 Nếu cần 2024: .\Build.ps1 -RevitVersion 2024 (đầu ra riêng bin/Release/Revit2024/net48).
 Entry point: CadLayerTools.ExportCadLayers
-Test.ps1 cũ vẫn thiếu work/tests. Chưa kiểm thử tạo/host/Workset trực tiếp trên Revit model thực.
+Chưa kiểm thử tạo/host/Workset trực tiếp trên Revit model thực. Các tệp test được giữ cục bộ và không đưa vào Git.
 
 GIAO DIỆN
 Phong cách FamilyWizardWindow: nền kem #F5F2EE, nút nâu #62543C, card trắng, thanh tiêu đề tùy chỉnh và checkbox đồng bộ. Giữ 4 bước và các chức năng CAD hiện có.

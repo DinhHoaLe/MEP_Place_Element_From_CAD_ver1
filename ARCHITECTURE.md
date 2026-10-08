@@ -27,10 +27,10 @@ EquipmentCreationService dùng overload NewFamilyInstance tương ứng; xác mi
 
 EquipmentPresence tính khoảng cách 3D trên snapshot LocationPoint của thiết bị trong host; UI cập nhật theo Type/Level/Offset. Service kiểm tra lại ngay trước tạo.
 
-## Layout / tests
+## Layout / validation
 
 ToolWindow.UseWorkspace dùng vùng nội dung co giãn trực tiếp, không đặt EquipmentWindow trong ScrollViewer toàn cột. Bảng cuộn riêng. ComboBox template dùng inset dọc 4 px để control thấp không cắt chữ.
 
-Test-SourceUi.ps1 build UI độc lập với Revit, kiểm tra step 2 chỉ chọn nguồn, layer switching, category/family cascade, host gating, Workset/Comments, Back, select/presence và layout với Advance mở.
+Bộ test cục bộ (không đưa vào Git) build UI độc lập với Revit, kiểm tra step 2 chỉ chọn nguồn, layer switching, category/family cascade, host gating, Workset/Comments, Back, select/presence và layout với Advance mở.
 
-Kiểm thử model thật vẫn cần thực hiện theo tests/Revit-checklist.md; test UI không chứng minh NewFamilyInstance/host/workset hoạt động đúng trên từng Family.
+Kiểm thử model thật vẫn cần thực hiện theo checklist cục bộ; test UI không chứng minh NewFamilyInstance/host/workset hoạt động đúng trên từng Family.

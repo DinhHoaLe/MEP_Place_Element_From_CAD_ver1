@@ -11,3 +11,8 @@ Debug/
 Release/
 
 Revit/
+
+# Local test sources and scripts
+/tests/
+/Test.ps1
+/Test-SourceUi.ps1
