@@ -20,7 +20,7 @@ namespace CadLayerTools
                 using(var package=Package.Open(temporary,FileMode.CreateNew,FileAccess.ReadWrite))
                 {
                     var workbook=Part(package,"/xl/workbook.xml","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml",
-                        "<workbook xmlns=\""+Main+"\" xmlns:r=\""+Rel.TrimEnd('/')+"\"><sheets><sheet name=\"Phần tử đã tạo\" sheetId=\"1\" r:id=\"rId1\"/></sheets></workbook>");
+                        "<workbook xmlns=\""+Main+"\" xmlns:r=\""+Rel.TrimEnd('/')+"\"><sheets><sheet name=\"Created elements\" sheetId=\"1\" r:id=\"rId1\"/></sheets></workbook>");
                     package.CreateRelationship(new Uri("/xl/workbook.xml",UriKind.Relative),TargetMode.Internal,Rel+"officeDocument");
                     workbook.CreateRelationship(new Uri("worksheets/sheet1.xml",UriKind.Relative),TargetMode.Internal,Rel+"worksheet","rId1");
                     workbook.CreateRelationship(new Uri("styles.xml",UriKind.Relative),TargetMode.Internal,Rel+"styles","rId2");

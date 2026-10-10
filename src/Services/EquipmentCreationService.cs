@@ -31,26 +31,28 @@ namespace CadLayerTools
                     return new ExistingEquipment {X=p.X*304.8,Y=p.Y*304.8,Z=p.Z*304.8,TypeId=i.Symbol.Id,Description=i.Symbol.FamilyName+" : "+i.Symbol.Name};
                 }).ToList();
         }
-        public static ElementCreationResult Create(Document doc, List<EquipmentPoint> points, FamilySymbol symbol, Level level, double offset, EquipmentHost host=null, object worksetId=null, string comments=null)
+        public static ElementCreationResult Create(Document doc, List<EquipmentPoint> points, FamilySymbol symbol, Level level, double offset, EquipmentHost host=null, object worksetId=null, string comments=null,Action<EquipmentPoint,int,int,string> progress=null)
         {
+            var batch=points.Where(p=>p.IsSelected).ToList();int completed=0;
+            foreach(var p in batch){p.Progress=0;p.ProgressStatus="Queued";}
             var kind=HostKind(symbol);
-            if(!IsEquipmentSymbol(symbol)||kind==EquipmentHostKind.Unsupported)throw new InvalidOperationException("Kiểu đặt của Family này chưa hỗ trợ.");
+            if(!IsEquipmentSymbol(symbol)||kind==EquipmentHostKind.Unsupported)throw new InvalidOperationException("This family placement type is not supported.");
             Element hostElement=null;PlanarFace hostFace=null;
             if(kind!=EquipmentHostKind.None)
             {
-                if(host==null||!host.FamilyId.Equals(symbol.Family.Id))throw new InvalidOperationException("Chọn host cho Family đang dùng.");
+                if(host==null||!host.FamilyId.Equals(symbol.Family.Id))throw new InvalidOperationException("Pick a host for the selected family.");
                 hostElement=doc.GetElement(host.ElementId);
-                if(hostElement==null)throw new InvalidOperationException("Host không còn tồn tại.");
+                if(hostElement==null)throw new InvalidOperationException("The host no longer exists.");
                 if(kind==EquipmentHostKind.Face)
                 {
                     hostFace=hostElement.GetGeometryObjectFromReference(host.FaceReference) as PlanarFace;
-                    if(hostFace==null)throw new InvalidOperationException("Cần chọn một mặt phẳng host hợp lệ.");
+                    if(hostFace==null)throw new InvalidOperationException("Select a valid planar host face.");
                 }
             }
             var result = new ElementCreationResult { CreatedIds = new List<ElementId>() };
             double z = level.ProjectElevation + offset/304.8;
             var occupied = Snapshot(doc);
-            using (var tx = new Transaction(doc, "Đặt thiết bị từ CAD"))
+            using (var tx = new Transaction(doc, "Place equipment from CAD"))
             {
                 tx.Start();
                 var options = tx.GetFailureHandlingOptions();
@@ -58,18 +60,19 @@ namespace CadLayerTools
                 try
                 {
                     if (!symbol.IsActive) { symbol.Activate(); doc.Regenerate(); }
-                    foreach (var point in points.Where(p => p.IsSelected))
+                    foreach (var point in batch)
                     {
+                        point.Progress=10;point.ProgressStatus="Placing";progress?.Invoke(point,completed,batch.Count,"Placing #"+point.Index);
                         var position = new XYZ(point.X/304.8, point.Y/304.8, z);
-                        if (occupied.Any(p => EquipmentPresence.SamePosition(point.X,point.Y,z*304.8,p))) { result.DuplicateCount++; continue; }
+                        if (occupied.Any(p => EquipmentPresence.SamePosition(point.X,point.Y,z*304.8,p))) { result.DuplicateCount++;completed++;point.Progress=100;point.ProgressStatus="Skipped: existing";progress?.Invoke(point,completed,batch.Count,"Skipped #"+point.Index);continue; }
                         FamilyInstance instance;
                         if(kind==EquipmentHostKind.Face)
                         {
                             hostFace=hostElement.GetGeometryObjectFromReference(host.FaceReference) as PlanarFace;
-                            if(hostFace==null)throw new InvalidOperationException("Mặt host đã thay đổi, hãy chọn lại host.");
+                            if(hostFace==null)throw new InvalidOperationException("The host face changed. Pick the host again.");
                             var projected=hostFace.Project(position);
                             if(projected==null||!hostFace.IsInside(projected.UVPoint)||projected.XYZPoint.DistanceTo(position)>0.1/304.8)
-                                throw new InvalidOperationException($"Block #{point.Index} không nằm trên mặt host. Chọn lại host hoặc chỉnh Level/Offset; tool không tự dời điểm CAD lên mặt khác.");
+                                throw new InvalidOperationException($"Block #{point.Index} is not on the host face. Pick another host or adjust the level/offset; CAD points are not moved automatically to another face.");
                             position=projected.XYZPoint;
                             // The face API requires a tangent direction, independent of CAD rotation.
                             var direction=XYZ.BasisX;
@@ -91,11 +94,11 @@ namespace CadLayerTools
                             var elevation=instance.get_Parameter(BuiltInParameter.INSTANCE_ELEVATION_PARAM);
                             if(elevation!=null&&!elevation.IsReadOnly&&elevation.StorageType==StorageType.Double)
                             {
-                                if(!elevation.Set(offset/304.8))throw new InvalidOperationException($"Block #{point.Index}: không gán được Offset so với Level.");
+                                if(!elevation.Set(offset/304.8))throw new InvalidOperationException($"Block #{point.Index}: unable to set the offset from the level.");
                                 doc.Regenerate();
                             }
                             var placed=instance.Location as LocationPoint;
-                            if(placed==null)throw new InvalidOperationException($"Block #{point.Index}: Family không trả về điểm đặt.");
+                            if(placed==null)throw new InvalidOperationException($"Block #{point.Index}: the family has no placement point.");
                             // Some families expose another elevation constraint. Correct only Z for
                             // unhosted instances; leave XY and orientation untouched, then validate below.
                             double dz=position.Z-placed.Point.Z;
@@ -107,28 +110,35 @@ namespace CadLayerTools
                             var parameter=instance.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM);
                             int value=Convert.ToInt32(worksetId);
                             if(parameter==null||parameter.IsReadOnly||!parameter.Set(value)||parameter.AsInteger()!=value)
-                                throw new InvalidOperationException("Không gán được Workset đã chọn.");
+                                throw new InvalidOperationException("Unable to assign the selected workset.");
                         }
                         if(!string.IsNullOrWhiteSpace(comments))
                         {
                             var parameter=instance.get_Parameter(BuiltInParameter.ALL_MODEL_INSTANCE_COMMENTS);
-                            if(parameter==null||parameter.IsReadOnly||!parameter.Set(comments))throw new InvalidOperationException("Không gán được Comments.");
+                            if(parameter==null||parameter.IsReadOnly||!parameter.Set(comments))throw new InvalidOperationException("Unable to assign comments.");
                         }
                         doc.Regenerate();
                         var location = instance.Location as LocationPoint;
-                        if(location==null)throw new InvalidOperationException($"Block #{point.Index}: Family không trả về điểm đặt. Đã hủy lần tạo.");
+                        if(location==null)throw new InvalidOperationException($"Block #{point.Index}: the family has no placement point. Creation was rolled back.");
                         if(kind==EquipmentHostKind.None&&!instance.LevelId.Equals(level.Id))
-                            throw new InvalidOperationException($"Block #{point.Index}: Family không thuộc Level đã chọn. Đã hủy lần tạo.");
+                            throw new InvalidOperationException($"Block #{point.Index}: the family is not on the selected level. Creation was rolled back.");
                         if(location.Point.DistanceTo(position)>0.1/304.8)
-                            throw new InvalidOperationException($"Block #{point.Index}: tọa độ Family không khớp (mm). Yêu cầu: X={position.X*304.8:0.###}, Y={position.Y*304.8:0.###}, Z={position.Z*304.8:0.###}. Thực tế: X={location.Point.X*304.8:0.###}, Y={location.Point.Y*304.8:0.###}, Z={location.Point.Z*304.8:0.###}. Đã hủy lần tạo.");
-                        if(kind==EquipmentHostKind.Element && (instance.Host==null||!instance.Host.Id.Equals(host.ElementId)))throw new InvalidOperationException("Family không gắn đúng host đã chọn.");
-                        if(kind==EquipmentHostKind.Face && (instance.HostFace==null||!instance.HostFace.ElementId.Equals(host.ElementId)))throw new InvalidOperationException("Family không gắn đúng mặt host đã chọn.");
+                            throw new InvalidOperationException($"Block #{point.Index}: family coordinates do not match (mm). Expected: X={position.X*304.8:0.###}, Y={position.Y*304.8:0.###}, Z={position.Z*304.8:0.###}. Actual: X={location.Point.X*304.8:0.###}, Y={location.Point.Y*304.8:0.###}, Z={location.Point.Z*304.8:0.###}. Creation was rolled back.");
+                        if(kind==EquipmentHostKind.Element && (instance.Host==null||!instance.Host.Id.Equals(host.ElementId)))throw new InvalidOperationException("The family is not attached to the selected host.");
+                        if(kind==EquipmentHostKind.Face && (instance.HostFace==null||!instance.HostFace.ElementId.Equals(host.ElementId)))throw new InvalidOperationException("The family is not attached to the selected host face.");
+                        point.Progress=90;point.ProgressStatus="Pending commit";completed++;progress?.Invoke(point,completed,batch.Count,"Placed #"+point.Index+" (pending commit)");
                         result.CreatedIds.Add(instance.Id); occupied.Add(new ExistingEquipment {X=point.X,Y=point.Y,Z=z*304.8,TypeId=symbol.Id});
                     }
-                    if (tx.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Revit từ chối đặt thiết bị; đã hoàn tác.");
+                    if (tx.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Revit rejected equipment placement; the operation was rolled back.");
                 }
-                catch { if (tx.GetStatus() == TransactionStatus.Started) tx.RollBack(); throw; }
+                catch
+                {
+                    if (tx.GetStatus() == TransactionStatus.Started) tx.RollBack();
+                    foreach(var p in batch){p.Progress=0;p.ProgressStatus="Rolled back";progress?.Invoke(p,0,batch.Count,"Placement rolled back");}
+                    throw;
+                }
             }
+            foreach(var p in batch){p.Progress=100;if(p.ProgressStatus=="Pending commit")p.ProgressStatus="Placed";progress?.Invoke(p,batch.Count,batch.Count,"Placement complete");}
             return result;
         }
     }

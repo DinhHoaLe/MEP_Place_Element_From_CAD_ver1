@@ -1,0 +1,40 @@
+{
+  "PlaceFromCad": [
+    "src/Commands/ExportCadLayers.cs",
+    "src/Commands/CreateDuctFromCad.cs",
+    "src/Workflow/CreateDuctWorkflow.cs",
+    "src/Workflow/DuctWorkflow.cs",
+    "src/Services/CadGeometryReader.cs",
+    "src/Services/CenterlineService.cs",
+    "src/Services/DuctCreationService.cs",
+    "src/Services/DuctDimensionService.cs",
+    "src/Services/DuctDuplicateService.cs",
+    "src/Services/DuctValidationService.cs",
+    "src/Services/PairPreviewService.cs",
+    "src/Matching/BoundaryMatcher.cs",
+    "src/Matching/MarkerMatcher.cs",
+    "src/Matching/UniqueLengthMatcher.cs",
+    "src/UI/DuctWindow.cs",
+    "src/UI/ResultsWindow.cs",
+    "src/UI/ModeWindow.cs",
+    "src/Models/Projected.cs",
+    "src/Models/MatchResult.cs",
+    "src/Models/Route.cs"
+  ],
+  "CreateDuctFromCad": [
+    "src/Commands/ExportCadLayers.cs",
+    "src/Commands/PlaceFromCad.cs",
+    "src/Workflow/CreateDuctWorkflow.cs",
+    "src/Workflow/EquipmentWorkflow.cs",
+    "src/Services/CadBlockReader.cs",
+    "src/Services/EquipmentCreationService.cs",
+    "src/Services/EquipmentHostService.cs",
+    "src/Services/EquipmentPresence.cs",
+    "src/Services/FamilyPreviewService.cs",
+    "src/UI/EquipmentWindow.cs",
+    "src/UI/CadSymbolPreview.cs",
+    "src/UI/ModeWindow.cs",
+    "src/Models/EquipmentPoint.cs",
+    "src/Services/CadAnnotationService.cs"
+  ]
+}

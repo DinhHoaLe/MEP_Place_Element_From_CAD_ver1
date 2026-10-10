@@ -7,18 +7,18 @@ namespace CadLayerTools
     {
         public PlacementMode Mode { get; private set; }
         readonly Button equipment, duct;
-        public ModeWindow(PlacementMode initial = PlacementMode.Duct) : base("01 / 04", "Chọn chức năng", "Một nguồn CAD · Hai cách tạo phần tử trong Revit",1180,760)
+        public ModeWindow(PlacementMode initial = PlacementMode.Duct) : base("01 / 04", "Choose mode", "One CAD source · Two ways to create Revit elements",1180,760)
         {
-            Section("Bạn muốn tạo gì?", "Chọn một phương án để bắt đầu. Bạn có thể quay lại thay đổi ở bước sau.");
+            Section("What would you like to create?", "Choose an option to begin. You can return and change it later.");
             var cards = new Grid(); cards.ColumnDefinitions.Add(new ColumnDefinition()); cards.ColumnDefinitions.Add(new ColumnDefinition());
-            equipment = Card("equipment", "Đặt thiết bị", "Block CAD → Family Revit", "Tọa độ XYZ · Family / Type\nFamily tự do hoặc cần host", PlacementMode.Equipment);
-            duct = Card("routes", "Vẽ tuyến MEP", "Tuyến CAD → Phần tử MEP", "Hiện hỗ trợ duct tròn · Chưa nối fitting\nPipe / Conduit / Cable tray: sẽ bổ sung", PlacementMode.Duct);
+            equipment = Card("equipment", "Place equipment", "CAD blocks → Revit families", "XYZ coordinates · Family / Type\nUnhosted or hosted families", PlacementMode.Equipment);
+            duct = Card("routes", "Create MEP routes", "CAD routes → MEP elements", "Round ducts supported · Fittings are not connected\nPipe / Conduit / Cable tray: planned", PlacementMode.Duct);
             equipment.Margin=new Thickness(0,8,12,8);duct.Margin=new Thickness(12,8,0,8);
             cards.Children.Add(equipment); Grid.SetColumn(duct,1);cards.Children.Add(duct);Body.Children.Add(cards);
             UseWorkspace(Body);
             Select(initial);
-            Action("Hủy",false,()=>Close()).IsCancel=true;
-            Action("Chọn nguồn CAD  →",true,()=>DialogResult=true).IsDefault=true;
+            Action("Cancel",false,()=>Close()).IsCancel=true;
+            Action("Select CAD source  →",true,()=>DialogResult=true).IsDefault=true;
         }
         Button Card(string icon,string title,string subtitle,string detail,PlacementMode mode)
         {
@@ -40,7 +40,7 @@ namespace CadLayerTools
                 button.Foreground=selected?Brushes.White:Ink;
                 button.BorderBrush=selected?new SolidColorBrush(Color.FromRgb(111,96,68)):new SolidColorBrush(Color.FromRgb(221,214,206));
                 button.BorderThickness=new Thickness(selected?3:1);
-                button.ToolTip=selected?"Đang chọn":"Nhấn để chọn";
+                button.ToolTip=selected?"Selected":"Click to select";
             }
         }
     }

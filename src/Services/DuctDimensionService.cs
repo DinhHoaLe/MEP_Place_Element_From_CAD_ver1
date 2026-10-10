@@ -18,7 +18,7 @@ public static void SetDimension(Duct duct,BuiltInParameter id,double value)
         {
             Parameter p=duct.get_Parameter(id);
             if(p==null || p.IsReadOnly || !p.Set(value) || Math.Abs(p.AsDouble()-value)>0.1/304.8)
-                throw new InvalidOperationException("Không gán được kích thước duct đã chọn.");
+                throw new InvalidOperationException("Unable to set the selected duct dimensions.");
         }
 }
 }

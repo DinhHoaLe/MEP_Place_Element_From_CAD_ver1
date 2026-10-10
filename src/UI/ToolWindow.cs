@@ -25,7 +25,7 @@ public class ToolWindow:Window
         public static Brush Muted=new SolidColorBrush(Color.FromRgb(113,107,99));
         public ToolWindow(string step,string title,string subtitle,double width=650,double height=660)
         {
-            Title="PLACE ELEMENT FROM CAD";Width=Math.Min(Math.Max(width,1100),SystemParameters.WorkArea.Width);Height=Math.Min(Math.Max(height,760),SystemParameters.WorkArea.Height);
+            Title=ToolIdentity.Title;Width=Math.Min(Math.Max(width,1100),SystemParameters.WorkArea.Width);Height=Math.Min(Math.Max(height,760),SystemParameters.WorkArea.Height);
             MinWidth=Math.Min(960,SystemParameters.WorkArea.Width);MinHeight=Math.Min(640,SystemParameters.WorkArea.Height);WindowStartupLocation=WindowStartupLocation.CenterOwner;
             ShowInTaskbar=false;FontFamily=new FontFamily("Segoe UI");FontSize=13;
             Background=new SolidColorBrush(Color.FromRgb(245,242,238));Foreground=Ink;
@@ -86,14 +86,15 @@ public class ToolWindow:Window
             badge.Child=new Image {Source=ModeArtwork.Load("project-symbol"),Stretch=Stretch.Uniform,Margin=new Thickness(3)};
             header.Children.Add(badge);
             var heading=new StackPanel {VerticalAlignment=VerticalAlignment.Center};
-            heading.Children.Add(new TextBlock {Text="BƯỚC "+step,FontSize=11,FontWeight=FontWeights.Bold,Foreground=new SolidColorBrush(Color.FromRgb(111,96,68)),Margin=new Thickness(0,0,0,4)});
+            heading.Children.Add(new TextBlock {Text="STEP "+(ToolIdentity.Dedicated?(int.Parse(step.Substring(0,2))-1).ToString("00")+" / 03":step),FontSize=11,FontWeight=FontWeights.Bold,Foreground=new SolidColorBrush(Color.FromRgb(111,96,68)),Margin=new Thickness(0,0,0,4)});
             heading.Children.Add(new TextBlock {Text=title,FontSize=27,FontWeight=FontWeights.SemiBold});
             heading.Children.Add(new TextBlock {Text=subtitle,FontSize=13,Foreground=Muted,Margin=new Thickness(0,9,0,0),TextWrapping=TextWrapping.Wrap});
             Grid.SetColumn(heading,1);header.Children.Add(heading);
             var steps=new Grid {VerticalAlignment=VerticalAlignment.Center};
             int current=int.Parse(step.Substring(0,2));
-            string[] labels={"Chọn\nchức năng","Chọn nguồn\nCAD","Cấu hình\nxem trước","Tạo và\nhoàn tất"};
-            for(int i=0;i<4;i++) {
+            string[] labels={"Choose\nmode","Select CAD\nsource","Configure\nand preview","Create\nand finish"};
+            if(ToolIdentity.Dedicated){current--;labels=new[]{"Select CAD\nsource",ToolIdentity.Title=="CREATE DUCT FROM CAD"?"Configure\nand create":"Configure\nand place","Report"};}
+            for(int i=0;i<labels.Length;i++) {
                 steps.ColumnDefinitions.Add(new ColumnDefinition());
                 var item=new StackPanel();
                 var circle=new Border {Width=34,Height=34,CornerRadius=new CornerRadius(17),Background=i+1==current?new SolidColorBrush(Color.FromRgb(98,84,60)):new SolidColorBrush(Color.FromRgb(232,226,218)),BorderBrush=new SolidColorBrush(Color.FromRgb(221,214,206)),BorderThickness=new Thickness(1)};
@@ -169,7 +170,7 @@ public class ToolWindow:Window
             double value;
             if(!double.TryParse(box.Text.Trim().Replace(',','.'),NumberStyles.Float,CultureInfo.InvariantCulture,out value)||
                double.IsNaN(value)||double.IsInfinity(value)||value<min||value>max)
-                throw new Exception(label+": nhập giá trị từ "+min+" đến "+max+".");
+                throw new Exception(label+": enter a value between "+min+" and "+max+".");
             return value;
         }
     }

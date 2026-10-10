@@ -8,7 +8,7 @@ namespace CadLayerTools
         public static List<ModelSource> Collect(Document host)
         {
             var sources = new List<ModelSource> {
-                new ModelSource { Name = host.Title + " · File hiện tại", Cads = ReadCads(host) }
+                new ModelSource { Name = host.Title + " · Current model", Cads = ReadCads(host) }
             };
             // Keep each instance: the same linked document can have multiple placements.
             foreach (var link in new FilteredElementCollector(host).OfClass(typeof(RevitLinkInstance))
@@ -17,8 +17,8 @@ namespace CadLayerTools
                 var linkedDocument = link.GetLinkDocument();
                 sources.Add(new ModelSource {
                     LinkId = link.Id,
-                    Name = $"{link.Name} · ID {link.Id}" + (linkedDocument == null ? " · Chưa load" : ""),
-                    UnavailableReason = linkedDocument == null ? "Revit Link chưa load. Hãy load link trong Manage Links rồi chạy lại tool." : null,
+                    Name = $"{link.Name} · ID {link.Id}" + (linkedDocument == null ? " · Unloaded" : ""),
+                    UnavailableReason = linkedDocument == null ? "The Revit link is unloaded. Load it in Manage Links and run the tool again." : null,
                     Cads = linkedDocument == null ? new List<CadSource>() : ReadCads(linkedDocument)
                 });
             }

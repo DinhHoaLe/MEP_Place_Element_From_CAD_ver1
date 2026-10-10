@@ -26,7 +26,7 @@ double eps=0.1/304.8;
                  (axis.GetEndPoint(1).DistanceTo(a)<=eps && axis.GetEndPoint(0).DistanceTo(b)<=eps));
             if(!endpoints || Math.Abs(axis.Length-route.Length/304.8)>eps ||
                 diameter==null || Math.Abs(diameter.AsDouble()-route.Width/304.8)>eps)
-                throw new Exception("Duct không khớp tim hoặc đường kính hai biên. Đã hủy lần tạo.");
+                throw new Exception("The duct does not match the requested centerline or diameter. Creation was rolled back.");
         }
 }
 }

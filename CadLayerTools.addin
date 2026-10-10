@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <RevitAddIns>
   <AddIn Type="Command">
-    <Name>place_element_from_cad</Name>
-    <Assembly>bin\Release\Revit2023\net48\CadLayerTools.dll</Assembly>
+    <Name>PLACE ELEMENT FROM CAD</Name>
+    <Assembly>bin\Release\Revit2023\net48\PlaceFromCad.dll</Assembly>
     <AddInId>0D3A7AE7-9E37-4D48-9815-CA7491B8DE25</AddInId>
-    <FullClassName>CadLayerTools.ExportCadLayers</FullClassName>
-    <Text>place_element_from_cad</Text>
+    <FullClassName>CadLayerTools.PlaceFromCad</FullClassName>
+    <Text>PLACE ELEMENT FROM CAD</Text>
     <VendorId>HOAL</VendorId>
-    <VendorDescription>Place Revit elements from CAD</VendorDescription>
+    <VendorDescription>Place Revit families at CAD block insertion points</VendorDescription>
   </AddIn>
 </RevitAddIns>
