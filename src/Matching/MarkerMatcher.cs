@@ -59,9 +59,9 @@ var counts=new Dictionary<int,int>();
                 counts[i]=counts.ContainsKey(i)?counts[i]+1:1;
             var result=proposals.Values.Where(p=>counts[p.A]==1&&counts[p.B]==1).OrderBy(p=>p.A).ToList();
             ambiguous+=proposals.Count-result.Count;
-            Diagnostics=$"Đoạn trên layer đường nối: {markers.Count}; quá ngắn: {shortMarkers}.\r\n"+
-                $"Đoạn nối có cả hai đầu chạm hai biên khác nhau: {matchedEnds}.\r\n"+
-                $"Lượt cặp bị loại: lệch chiều dài {lengthRejected}; không song song/cùng phía {directionRejected}; không vuông góc {angleRejected}; khoảng cách quá nhỏ {gapRejected}.";
+            Diagnostics=$"Segments on connector layer: {markers.Count}; too short: {shortMarkers}.\r\n"+
+                $"Connectors with endpoints touching distinct boundaries: {matchedEnds}.\r\n"+
+                $"Rejected pairs: length mismatch {lengthRejected}; not parallel or on the same side {directionRejected}; not perpendicular {angleRejected}; spacing too small {gapRejected}.";
             return result;
         }
     }

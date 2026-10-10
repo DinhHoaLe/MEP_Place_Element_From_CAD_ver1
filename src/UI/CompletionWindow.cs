@@ -8,7 +8,7 @@ namespace CadLayerTools
 {
     public class CompletionWindow : ToolWindow
     {
-        public CompletionWindow(string summary,List<CreatedElementRow> rows=null) : base("04 / 04", "Hoàn tất", "Phần tử được tạo trong file Revit hiện tại",1400,900)
+        public CompletionWindow(string summary,List<CreatedElementRow> rows=null) : base("04 / 04", "Complete", "Elements are created in the current Revit model",1400,900)
         {
             rows=rows??new List<CreatedElementRow>();
             var layout=new Grid();layout.RowDefinitions.Add(new RowDefinition {Height=GridLength.Auto});layout.RowDefinitions.Add(new RowDefinition());layout.RowDefinitions.Add(new RowDefinition {Height=GridLength.Auto});
@@ -19,16 +19,16 @@ namespace CadLayerTools
             int[] widths={100,160,220,180,140,120,120,120,160,100,220};
             for(int i=0;i<headers.Length;i++)grid.Columns.Add(new DataGridTextColumn {Header=headers[i],Width=widths[i],Binding=new Binding(properties[i]) {StringFormat=i>=5&&i<=7?"{0:0.###}":null}});
             Grid.SetRow(grid,1);layout.Children.Add(grid);
-            var note=new TextBlock {Text="Danh sách của lần tạo vừa hoàn tất. XYZ: tọa độ nội bộ model, đơn vị mm; tuyến dùng điểm đầu.\nBack giữ phần tử đã tạo. Undo trong Revit để hoàn tác lần tạo.",Foreground=Muted,TextWrapping=TextWrapping.Wrap,Margin=new Thickness(0,14,0,0)};
+            var note=new TextBlock {Text="Results of the latest creation. XYZ: internal model coordinates in mm; routes use their start point.\nBack keeps created elements. Use Undo in Revit to undo the operation.",Foreground=Muted,TextWrapping=TextWrapping.Wrap,Margin=new Thickness(0,14,0,0)};
             Grid.SetRow(note,2);layout.Children.Add(note);UseWorkspace(layout);
             BackButton();
-            Action("Xuất Excel",false,()=>{
-                var dialog=new SaveFileDialog {Title="Lưu danh sách phần tử đã tạo",Filter="Excel Workbook (*.xlsx)|*.xlsx",DefaultExt=".xlsx",AddExtension=true,OverwritePrompt=true,FileName="PhanTuDaTao_"+DateTime.Now.ToString("yyyyMMdd_HHmmss")+".xlsx"};
+            Action("Export Excel",false,()=>{
+                var dialog=new SaveFileDialog {Title="Save created element list",Filter="Excel Workbook (*.xlsx)|*.xlsx",DefaultExt=".xlsx",AddExtension=true,OverwritePrompt=true,FileName="CreatedElements_"+DateTime.Now.ToString("yyyyMMdd_HHmmss")+".xlsx"};
                 if(dialog.ShowDialog(this)!=true)return;
-                try{CreatedElementExcel.Save(dialog.FileName,rows);Error.Text="Đã lưu "+rows.Count+" phần tử: "+dialog.FileName;}
-                catch(Exception ex){MessageBox.Show(this,"Không xuất được Excel. "+ex.Message,"Xuất Excel",MessageBoxButton.OK,MessageBoxImage.Warning);}
+                try{CreatedElementExcel.Save(dialog.FileName,rows);Error.Text="Saved "+rows.Count+" elements: "+dialog.FileName;}
+                catch(Exception ex){MessageBox.Show(this,"Unable to export Excel. "+ex.Message,"Export Excel",MessageBoxButton.OK,MessageBoxImage.Warning);}
             }).IsEnabled=rows.Count>0;
-            Action("Đóng",true,()=>Close()).IsCancel=true;
+            Action("Continue",true,()=>Close()).IsCancel=true;
         }
     }
 }

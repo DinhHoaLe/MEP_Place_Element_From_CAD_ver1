@@ -22,8 +22,8 @@ public class ExportCadLayers : IExternalCommand
         var running = typeof(Document).Assembly.GetName().Version.Major;
         if(target!=running)
         {
-            message=$"DLL này dành cho Revit {2000+target}. Hãy nạp bản bin/Release/Revit{2000+running}/net48/CadLayerTools.dll cho Revit đang mở.";
-            TaskDialog.Show("Sai phiên bản Revit",message);return Result.Cancelled;
+            message=$"This DLL targets Revit {2000+target}. Load bin/Release/Revit{2000+running}/net48/CadLayerTools.dll for the running Revit version.";
+            TaskDialog.Show("Revit version mismatch",message);return Result.Cancelled;
         }
         return CreateDuctWorkflow.Run(data, ref message, elements);
     }

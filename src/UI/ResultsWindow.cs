@@ -15,10 +15,10 @@ namespace CadLayerTools
 public class ResultsWindow:ToolWindow
     {
         public ResultsWindow(List<PairRow> rows,int unpaired,int shortCount,int ambiguous,string diagnostic):
-            base("02 / 03","Kiểm tra các cặp biên","Mỗi cặp biên tạo một đoạn ống tròn theo đường tim.",1080,700)
+            base("02 / 03","Review boundary pairs","Each boundary pair creates one round duct along its centerline.",1080,700)
         {
 
-            var summary=new TextBlock {Text=$"{rows.Count} CẶP HỢP LỆ     •     {unpaired} CHƯA GHÉP     •     {shortCount} ĐOẠN NGẮN     •     {ambiguous} MƠ HỒ",
+            var summary=new TextBlock {Text=$"{rows.Count} VALID PAIRS     •     {unpaired} UNPAIRED     •     {shortCount} SHORT SEGMENTS     •     {ambiguous} AMBIGUOUS",
                 Foreground=new SolidColorBrush(Color.FromRgb(184,86,105)),FontWeight=FontWeights.SemiBold,Margin=new Thickness(0,0,0,18),TextWrapping=TextWrapping.Wrap};
             Body.Children.Add(summary);
             var grid=new DataGrid {ItemsSource=rows,AutoGenerateColumns=false,IsReadOnly=true,CanUserAddRows=false,HeadersVisibility=DataGridHeadersVisibility.Column,
@@ -26,16 +26,16 @@ public class ResultsWindow:ToolWindow
                 HorizontalGridLinesBrush=new SolidColorBrush(Color.FromRgb(232,226,218)),AlternatingRowBackground=new SolidColorBrush(Color.FromRgb(255,247,248)),
                 EnableRowVirtualization=true,EnableColumnVirtualization=true};
             string[] names={"A","B","Length","Diameter","Delta","Start","End"};
-            string[] headers={"Line A","Line B","Dài tim (mm)","Diameter (mm)","Chênh (mm)","Điểm đầu X,Y","Điểm cuối X,Y"};
+            string[] headers={"Line A","Line B","Length (mm)","Diameter (mm)","Difference (mm)","Start X,Y","End X,Y"};
             for(int i=0;i<names.Length;i++)grid.Columns.Add(new DataGridTextColumn {
                 Header=headers[i],Binding=new Binding(names[i]) {StringFormat=i>=2&&i<=4?"{0:0.###}":null},
                 Width=new DataGridLength(i>=5?160:110)});
             Body.Children.Add(grid);
-            Body.Children.Add(new Expander {Header="Chi tiết nhận diện",Margin=new Thickness(0,18,0,0),
+            Body.Children.Add(new Expander {Header="Detection details",Margin=new Thickness(0,18,0,0),
                 Content=new TextBlock {Text=diagnostic,TextWrapping=TextWrapping.Wrap,Foreground=Muted,Margin=new Thickness(0,10,0,0)}});
             BackButton();
-            Action("Đóng",false,()=>Close()).IsCancel=true;
-            Action("Cấu hình ống gió  →",true,()=>DialogResult=true).IsEnabled=rows.Count>0;
+            Action("Close",false,()=>Close()).IsCancel=true;
+            Action("Configure ducts  →",true,()=>DialogResult=true).IsEnabled=rows.Count>0;
         }
 
     }

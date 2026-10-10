@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>PlaceFromCad</AssemblyName>
+    <RevitVersion Condition="'$(RevitVersion)' == ''">2023</RevitVersion>
+    <OutputPath>bin\$(Configuration)\Revit$(RevitVersion)\</OutputPath>
+    <RevitInstallDir Condition="'$(RevitInstallDir)' == ''">C:\Program Files\Autodesk\Revit $(RevitVersion)</RevitInstallDir>
+    <AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages>
+    <BaseIntermediateOutputPath>obj\PlaceFromCad\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="RevitAPI">
+      <HintPath>$(RevitInstallDir)\RevitAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>$(RevitInstallDir)\RevitAPIUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(RevitInstallDir)\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="work\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\**\*.cs" Exclude="src/Commands/ExportCadLayers.cs;src/Commands/CreateDuctFromCad.cs;src/Workflow/CreateDuctWorkflow.cs;src/Workflow/DuctWorkflow.cs;src/Services/CadGeometryReader.cs;src/Services/CenterlineService.cs;src/Services/DuctCreationService.cs;src/Services/DuctDimensionService.cs;src/Services/DuctDuplicateService.cs;src/Services/DuctValidationService.cs;src/Services/PairPreviewService.cs;src/Matching/BoundaryMatcher.cs;src/Matching/MarkerMatcher.cs;src/Matching/UniqueLengthMatcher.cs;src/UI/DuctWindow.cs;src/UI/ResultsWindow.cs;src/UI/ModeWindow.cs;src/Models/Projected.cs;src/Models/MatchResult.cs;src/Models/Route.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="assets\project-symbol.png;assets\equipment.png">
+      <LogicalName>CadLayerTools.Assets.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

@@ -14,8 +14,8 @@ namespace CadLayerTools
             {
                 var matches=existing.Where(e=>SamePosition(point.X,point.Y,z,e)).ToList();
                 point.HasExisting=matches.Count>0;
-                point.ExistingStatus=matches.Count==0 ? "Chưa có" :
-                    (matches.Any(e=>Equals(e.TypeId,typeId)) ? "Đã có · cùng Type" : "Đã có · khác Type");
+                point.ExistingStatus=matches.Count==0 ? "Not placed" :
+                    (matches.Any(e=>Equals(e.TypeId,typeId)) ? "Placed · same type" : "Placed · different type");
                 if(point.HasExisting) point.IsSelected=false;
             }
         }

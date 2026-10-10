@@ -1,55 +1,84 @@
-place_element_from_cad — Revit 2023 (mặc định)
+PLACE ELEMENT FROM CAD
+Revit 2023 and 2024 (.NET Framework 4.8)
 
-FLOW
-0. Logo CAD hiển thị khi đọc model/link/CAD.
-1. Chọn chức năng: Đặt thiết bị hoặc Vẽ tuyến MEP. Hai hình minh họa AI nhúng trong DLL.
-2. Chỉ chọn Model nguồn và CAD; không chọn layer ở bước này.
-3. Chọn layer, xem trước và cấu hình. Đổi layer cập nhật danh sách ngay trong cửa sổ.
-4. Tạo trong file hiện tại và hiển thị kết quả.
-Back ở bước 2/3/4 giữ cấu hình; Back từ kết quả không undo phần tử đã tạo.
-
-NGUỒN
-Mặc định chọn file hiện tại, kể cả khi chưa có CAD. Back giữ lựa chọn nguồn trước đó.
-Hỗ trợ CAD import/link trực tiếp hoặc trong Revit Link trực tiếp đang load; transform link áp vào geometry.
-Chưa duyệt link lồng nhiều cấp. Dữ liệu CAD đọc từ document nguồn, phần tử được tạo trong host.
-
-THIẾT BỊ / BƯỚC 3
-- Chọn layer cùng hàng với icon chọn tất cả/bỏ chọn. Tick dòng muốn tạo.
-- Category -> Family -> Type; hiện toàn bộ Category trong document, bỏ giới hạn danh mục MEP.
-  Family/Type chỉ liệt kê những loại đã load. Category trống hoặc kiểu đặt chưa hỗ trợ không cho tạo.
-  Chọn Level và Offset. X/Y lấy điểm chèn CAD; Z = Level + Offset. Không xoay Family theo góc CAD.
-- Advance: Workset (Không có WS nếu model không workshared) và Comments.
-- Preview lấy nét Curve/PolyLine thật của block, chiếu XY; dấu + là điểm chèn. Tối đa 2.000 nét/block.
-- Bên cạnh symbol CAD là thumbnail Family Type từ Revit; báo rõ khi Type không có thumbnail.
-- Hiện diện kiểm tra XYZ trong host, dung sai 1 mm; vị trí đã có thiết bị bị bỏ chọn, kể cả khác Type.
-- Layout tự chia chiều cao, không cuộn toàn bộ hai cột; bảng nhiều dòng vẫn có scrollbar riêng.
-- Một layer map tới một Family Type mỗi lần tạo. Chưa hỗ trợ ký hiệu explode/flatten, block nghiêng/phản chiếu.
-
-FAMILY CẦN HOST
-- OneLevelBased: đặt theo Level + Offset, không cần host.
-- Gán Offset tương đối với Level, cập nhật Revit rồi đối chiếu Z tuyệt đối; nếu cần chỉ hiệu chỉnh Z cho Family không host. Giữ nguyên XY và hướng; vẫn kiểm tra tọa độ và Level trước khi chấp nhận.
-- OneLevelBasedHosted: chọn phần tử host trong file gốc (tường/sàn/trần/mái phù hợp với Family).
-- WorkPlaneBased: chọn mặt phẳng host trong file gốc.
-- Nút Chọn host trong Revit đóng tạm cấu hình để pick, rồi quay lại cùng layer/cấu hình/checkbox. Esc hủy pick.
-- Một host cho mỗi lần tạo; chọn các dòng CAD thuộc cùng host. Đổi Family phải chọn host tương ứng.
-- Với face-based: điểm XY + Level/Offset phải nằm trên mặt đã chọn trong dung sai 0,1 mm; không tự dời điểm CAD tới host.
-  Face-based dùng hướng tiếp tuyến cố định theo mặt host vì API yêu cầu; không dùng góc block CAD.
-- Kiểm tra vị trí và liên kết host sau tạo; lỗi rollback cả lô và quay về cấu hình.
-- Chưa hỗ trợ host trong Revit Link, mặt cong, adaptive/curve-based hoặc view-based. UI khóa Tạo cho kiểu đặt chưa hỗ trợ.
-
-ỐNG GIÓ
-Bước 3 chọn layer biên/đường nối và thông số nhận diện, rồi xem trước tuyến.
-Giữ thuật toán ghép biên theo đoạn nối, tạo duct tròn, chưa nối fitting.
+PLACE PROJECT AND MIGRATED DUCT TOOL
+- PlaceFromCad.csproj -> PlaceFromCad.dll -> CadLayerTools.PlaceFromCad
+  Places loaded Revit family types at CAD block insertion points.
+  This DLL excludes the duct workflow, duct creation services and duct UI.
+- CREATE DUCT FROM CAD has moved to the independent sibling project:
+  D:\2_Revit\6_Working\00. Revit_API\Project\MEP_Create_Duct_From_IFC_ver1
+  It has its own CreateDuctFromCad.csproj, source, assets, Build.ps1 and Install.ps1.
+  Creates round ducts from CAD boundary pairs and connector segments.
+  This DLL excludes the equipment workflow, equipment creation services and equipment UI.
+- CadLayerTools.dll remains available for the legacy Add-In Manager entry
+  CadLayerTools.ExportCadLayers. It offers the original mode selector.
+  Use PlaceFromCad.dll here. Build/load CreateDuctFromCad.dll from the migrated project.
 
 BUILD / INSTALL
-.\Build.ps1
-.\Install.ps1 (restart Revit)
-DLL Revit 2023: bin/Release/Revit2023/net48/CadLayerTools.dll
-Không dùng DLL build với API 2024 trên Revit 2023: gây lỗi Method not found khi đặt Family.
-Tool kiểm tra API major version trước khi chạy. Build/Install mặc định 2023.
-Nếu cần 2024: .\Build.ps1 -RevitVersion 2024 (đầu ra riêng bin/Release/Revit2024/net48).
-Entry point: CadLayerTools.ExportCadLayers
-Chưa kiểm thử tạo/host/Workset trực tiếp trên Revit model thực. Các tệp test được giữ cục bộ và không đưa vào Git.
+.\Build.ps1 -RevitVersion 2023
+.\Build.ps1 -RevitVersion 2024
+Default build is Place only. -Tool All also builds Place only. -Tool Combined builds the legacy compatibility DLL.
+Output: bin/Release/Revit<year>/net48/
+.\Install.ps1 -RevitVersion 2023 (or 2024)
+Restart Revit. This project registers PLACE ELEMENT FROM CAD only. Install the Duct tool from its new folder.
+The installed manifest references PlaceFromCad.dll in this project folder.
+Keep the folder in place. Do not load a DLL compiled for another Revit version.
 
-GIAO DIỆN
-Phong cách FamilyWizardWindow: nền kem #F5F2EE, nút nâu #62543C, card trắng, thanh tiêu đề tùy chỉnh và checkbox đồng bộ. Giữ 4 bước và các chức năng CAD hiện có.
+WORKFLOW
+1. Select source model and CAD import/link. Direct loaded Revit links are supported.
+2. Select layer and settings, review the preview, then Place or Create.
+   Progress appears in each row and in a horizontal overall bar.
+   Processing remains on the Revit command/UI thread. Input and closing are blocked during creation.
+   Rows remain pending until the transaction commits. A failed transaction rolls back the entire batch.
+3. After success, choose whether to view the report. Yes opens the Report step.
+   No keeps the settings window open. Continue/Back/Close on the report returns to the settings window.
+   You can select another layer and continue without restarting the command.
+   Back on settings returns to source selection. Cancel exits the tool.
+   Already committed elements are kept when leaving; use Revit Undo to revert a batch.
+
+CAD PREVIEW
+Block previews use Curve/PolyLine strokes, Solid/Face edges and Mesh triangle edges.
+If symbol geometry is sparse, instance geometry is checked without applying its transform twice.
+The preview shows the actual geometry Revit exposes, projected onto host XY; the red + is insertion.
+Nested blocks are not counted twice. Mirrored blocks are accepted; tilted/degenerate blocks are skipped.
+At most 2,000 strokes are drawn per block. The preview reports symbol/instance stroke counts.
+Revit may omit CAD text/attributes. Optional verified DWG attributes can supplement the preview.
+Run .\scripts\Export-CadAnnotations.ps1 -DwgPath '<full DWG path>' with AutoCAD CoreConsole installed.
+The exporter works on a copy and saves local JSON under ignored work/cad-annotations/.
+Re-export after changing the DWG. The source file must remain accessible for hash verification.
+The preview requires a matching CAD filename, unchanged DWG hash, layer and unique insertion XY
+within 1 mm; linked CAD also requires the exact source path. Unmatched data is not attached.
+The exporter currently assumes drawing coordinates/text height are millimetres and model-space,
+top-level INSERT attributes. It does not export ordinary TEXT/MTEXT, nested attributes or font styles.
+The JSON is local data, not shipped with the tool. Preview does not require running AutoCAD.
+For HRDP_DSA_BD_EL_PL_16CT2_102.dwg, MEP-ELV-EQUIPMENT has eight blocks whose definition is
+one rectangle plus an attribute A/B/C. AutoCAD selection grips are not part of the symbol.
+Exploded symbols are not recognized as equipment blocks. Nested Revit links are not traversed.
+
+PLACEMENT
+X/Y use the transformed CAD insertion point. Z uses host Level.ProjectElevation + Offset.
+Family orientation stays at its default; CAD rotation/mirroring is used for preview, not family orientation.
+Category/Family/Type list loaded families; unsupported placement types cannot be placed.
+OneLevelBased: level-based placement, with elevation validation.
+OneLevelBasedHosted: pick a wall/floor/ceiling/roof in the host model.
+WorkPlaneBased: pick a planar face in the host model. CAD points must lie on it within 0.1 mm.
+Hosted placement does not automatically move the CAD insertion point onto a different face.
+Linked hosts, curved faces, adaptive/curve-based and view-based families are not supported.
+Workset and Comments are optional. Host/family/level/position are validated before accepting the batch.
+Presence is checked at XYZ within 1 mm, including devices of another type. Existing rows are deselected.
+After placement the snapshot is refreshed so later layers cannot duplicate the same position.
+
+DUCT CREATION
+Round ducts only; fittings are not connected.
+Boundary/connector matching, dimension validation and duplicate detection are preserved.
+Changing a layer or detection settings updates the route table immediately.
+
+REPORT
+Latest batch only: Element ID, Category, Family, Type, Level, XYZ (internal model coordinates in mm),
+Workset, Mark and Comments. Routes use their start point. Export Excel writes an .xlsx workbook.
+
+VALIDATION
+Local UI/geometry/source-set tests and CAD diagnostics live in ignored tests/ and work/ folders.
+They are not shipped or tracked in Git. Build/UI tests do not replace live Revit model validation.
+All tool-owned labels, tooltips, validation messages and export sheet names use English.
+Model/layer/family/type/workset names are displayed as supplied by the Revit model.

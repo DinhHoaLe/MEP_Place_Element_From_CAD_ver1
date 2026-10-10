@@ -18,7 +18,7 @@ namespace CadLayerTools
                     Id=id.ToString(),Category=element.Category?.Name,Family=type?.FamilyName,Type=type?.Name,
                     Level=doc.GetElement(element.LevelId)?.Name,
                     X=point==null?(double?)null:point.X*304.8,Y=point==null?(double?)null:point.Y*304.8,Z=point==null?(double?)null:point.Z*304.8,
-                    Workset=doc.IsWorkshared?doc.GetWorksetTable().GetWorkset(element.WorksetId)?.Name:"Không có WS",
+                    Workset=doc.IsWorkshared?doc.GetWorksetTable().GetWorkset(element.WorksetId)?.Name:"No worksets",
                     Mark=element.get_Parameter(BuiltInParameter.ALL_MODEL_MARK)?.AsString(),
                     Comments=element.get_Parameter(BuiltInParameter.ALL_MODEL_INSTANCE_COMMENTS)?.AsString()
                 });

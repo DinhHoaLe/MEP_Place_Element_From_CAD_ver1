@@ -17,16 +17,16 @@ namespace CadLayerTools
             var kind=EquipmentCreationService.HostKind(symbol);
             if(kind==EquipmentHostKind.Face)
             {
-                var reference=ui.Selection.PickObject(ObjectType.Face,new HostFilter(ui.Document,true),"Chọn mặt phẳng host trong file hiện tại (không chọn mặt của Revit Link)");
-                return new EquipmentHost {FamilyId=symbol.Family.Id,ElementId=reference.ElementId,FaceReference=reference,Description="Mặt host · ID "+reference.ElementId};
+                var reference=ui.Selection.PickObject(ObjectType.Face,new HostFilter(ui.Document,true),"Pick a planar host face in the current model (not a Revit link face)");
+                return new EquipmentHost {FamilyId=symbol.Family.Id,ElementId=reference.ElementId,FaceReference=reference,Description="Host face · ID "+reference.ElementId};
             }
             if(kind==EquipmentHostKind.Element)
             {
-                var reference=ui.Selection.PickObject(ObjectType.Element,new HostFilter(ui.Document,false),"Chọn tường/sàn/trần/mái làm host trong file hiện tại");
+                var reference=ui.Selection.PickObject(ObjectType.Element,new HostFilter(ui.Document,false),"Pick a wall, floor, ceiling or roof host in the current model");
                 var element=ui.Document.GetElement(reference.ElementId);
                 return new EquipmentHost {FamilyId=symbol.Family.Id,ElementId=element.Id,Description=element.Name+" · ID "+element.Id};
             }
-            throw new InvalidOperationException("Family này không dùng lựa chọn host này.");
+            throw new InvalidOperationException("This family does not support this host selection.");
         }
         class HostFilter:ISelectionFilter
         {
